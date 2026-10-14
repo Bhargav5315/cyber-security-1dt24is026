@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishGuard Pro | Security Scanner</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+    <aside class="sidebar">
+        <a href="/" class="brand">
+            <span class="brand-icon">P</span>
+            <span>PhishGuard <small>PRO</small></span>
+        </a>
+
+        <p class="nav-heading">SECURITY CENTER</p>
+        <a class="nav-link active" href="/">▦ &nbsp; Dashboard</a>
+        <a class="nav-link" href="#scanner">⌕ &nbsp; URL Scanner</a>
+        <a class="nav-link" href="#history">◷ &nbsp; Scan History</a>
+
+        <div class="sidebar-bottom">
+            <span class="status-dot"></span>
+            Local scanner running
+            <p>Phishing Detection System</p>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">SECURITY OVERVIEW</p>
+                <h1>Dashboard</h1>
+            </div>
+            <div class="local-badge">● Local application</div>
+        </header>
+
+        <section class="welcome">
+            <div>
+                <p class="eyebrow">YOUR CYBERSECURITY WORKSPACE</p>
+                <h2>Detect suspicious links before you click.</h2>
+                <p>Analyze URL characteristics and understand potential warning signs.</p>
+                <a href="#scanner" class="primary-link">Start a URL scan →</a>
+            </div>
+            <div class="shield-art">⌑</div>
+        </section>
+
+        <section class="stats">
+            <article class="stat-card">
+                <span class="stat-icon">⌕</span>
+                <p>Scanner status</p>
+                <h3>Ready</h3>
+                <small>Rule-based analysis enabled</small>
+            </article>
+            <article class="stat-card">
+                <span class="stat-icon">◈</span>
+                <p>Threat intelligence</p>
+                <h3>Not connected</h3>
+                <small>External threat checks not enabled yet</small>
+            </article>
+            <article class="stat-card">
+                <span class="stat-icon">◷</span>
+                <p>Scan history</p>
+                <h3 id="scan-count">0</h3>
+                <small>Scans saved in this browser</small>
+            </article>
+        </section>
+
+        <section class="panel" id="scanner">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">URL ANALYSIS</p>
+                    <h2>Website Safety Scanner</h2>
+                </div>
+                <span class="tag">RULE-BASED</span>
+            </div>
+
+            <p class="muted">
+                Enter a website address. This scanner checks basic indicators;
+                it does not visit or verify the website itself.
+            </p>
+
+            <form method="POST" id="scan-form">
+                <label for="url">Website URL</label>
+                <div class="input-row">
+                    <input
+                        type="text"
+                        id="url"
+                        name="url"
+                        placeholder="https://example.com"
+                        value="{{ entered_url }}"
+                        maxlength="2048"
+                        autocomplete="url"
+                        required>
+                    <button type="submit" id="scan-button">Scan URL →</button>
+                </div>
+                <p class="hint">Tip: paste the complete URL you want to inspect.</p>
+            </form>
+
+            {% if result %}
+            <div class="result-card"
+     data-status="{{ result.status }}"
+     data-score="{{ result.score }}"
+     data-url="{{ result.url or '' }}">
+                <div class="result-top">
+                    <div>
+                        <p class="eyebrow">ANALYSIS RESULT</p>
+                        <h2>{{ result.status }}</h2>
+                    </div>
+                    <div class="score">
+                        <strong>{{ result.score }}</strong>
+                        <span>/ 100</span>
+                        <small>Rule-based score</small>
+                    </div>
+                </div>
+
+                <p class="scanned-url">
+                    <strong>Submitted URL:</strong>
+                    {{ entered_url }}
+                </p>
+
+                <h3>Why did the scanner give this result?</h3>
+                <ul class="findings">
+                    {% for finding in result.findings %}
+                    <li>{{ finding }}</li>
+                    {% endfor %}
+                </ul>
+
+                {% if result.url %}
+                <p class="warning">
+                    Proceed with caution. This result is not proof that the
+                    destination is safe. Opening links can expose you to risk.
+                </p>
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="show-open-warning"
+                    data-url="{{ result.url }}">
+                    Review before opening
+                </button>
+                <div id="open-warning" class="open-warning" hidden>
+                    <p><strong>Check the destination carefully.</strong></p>
+                    <p id="destination"></p>
+                    <a id="open-link" href="#"
+                       target="_blank"
+                       rel="noopener noreferrer">Open in new tab</a>
+                    <button type="button" id="cancel-open"
+                            class="secondary-button">Cancel</button>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </section>
+
+        <section class="panel" id="history">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">RECENT ACTIVITY</p>
+                    <h2>Scan History</h2>
+                </div>
+                <button type="button" id="clear-history"
+                        class="secondary-button">Clear history</button>
+            </div>
+            <div id="history-list" class="history-list">
+                <p class="muted">Your recent scans will appear here.</p>
+            </div>
+        </section>
+
+        <footer>
+            PhishGuard Pro · Educational cybersecurity project
+            <p>Preliminary checks only. No result guarantees website safety.</p>
+        </footer>
+    </main>
+</body>
+</html>
